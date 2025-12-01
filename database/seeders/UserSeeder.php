@@ -22,6 +22,7 @@ class UserSeeder extends Seeder
                 'role' => 'Admin',
                 'department' => 'IT',
                 'team' => 'ITPM2',
+                'region' => 'VIS',
             ],
             [
                 'name' => 'Justine',
@@ -30,6 +31,7 @@ class UserSeeder extends Seeder
                 'role' => 'User',
                 'department' => 'IT',
                 'team' => 'ITPM1',
+                'region' => 'VIS',
             ],
         ]);
     }

@@ -32,7 +32,7 @@ enum DepartmentEnum: string
     public function label(): string
     {
         return match($this) {
-            self::IT => 'Information Technology',
+            self::IT => 'IT',
             self::TRE => 'Treasury',
             self::CPO => 'Central Purchasing Office',
             self::ACCT => 'Accounting',

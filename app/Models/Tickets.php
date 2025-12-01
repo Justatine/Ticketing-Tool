@@ -28,7 +28,6 @@ class Tickets extends Model
         'date_closed',
         'severity',
         'reporter_department',
-        'region',
         'resolution',
         'performance',
         'sla',

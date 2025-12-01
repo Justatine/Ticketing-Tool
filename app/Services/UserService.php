@@ -3,21 +3,14 @@
 namespace App\Services;
 
 use App\Enums\DepartmentEnum;
+use App\Enums\RegionEnum;
+use App\Enums\RoleEnum;
+use App\Enums\TeamEnum;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
-    /**
-     * Get all departments for dropdown.
-     */
-    public function getDepartments(): array
-    {
-        return collect(DepartmentEnum::cases())->map(fn($val) => [
-            'value' => $val->value,
-            'label' => $val->label(),
-        ])->toArray();
-    }
     /**
      * Store a new user.
      */
@@ -48,5 +41,47 @@ class UserService
     public function destroy(User $user): void
     {
         $user->delete();
+    }
+
+    /**
+     * Get all regions for dropdown.
+     */
+    public function getRegions(): array
+    {
+        return collect(RegionEnum::cases())->map(fn($val) => [
+            'value' => $val->value,
+            'label' => $val->label(),
+        ])->toArray();
+    }
+    /**
+     * Get all regions for dropdown.
+     */
+    public function getTeams(): array
+    {
+        return collect(TeamEnum::cases())->map(fn($val) => [
+            'value' => $val->value,
+            'label' => $val->label(),
+        ])->toArray();
+    }
+    /**
+     * Get all departments for dropdown.
+     */
+    public function getDepartments(): array
+    {
+        return collect(DepartmentEnum::cases())->map(fn($val) => [
+            'value' => $val->value,
+            'label' => $val->label(),
+        ])->toArray();
+    }
+
+    /**
+     * Get all roles for dropdown.
+     */
+    public function getRoles(): array
+    {
+        return collect(RoleEnum::cases())->map(fn($val) => [
+            'value' => $val->value,
+            'label' => $val->label(),
+        ])->toArray();
     }
 }

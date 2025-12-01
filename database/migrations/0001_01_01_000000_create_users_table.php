@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('role');
             $table->string('department');
             $table->string('team');
+            $table->string('region');
             $table->rememberToken();
             $table->timestamps();
         });

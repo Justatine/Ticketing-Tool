@@ -29,7 +29,6 @@ return new class extends Migration
             $table->dateTime('date_closed')->nullable()->default(null);
             $table->string('severity')->default('LOW');
             $table->string('reporter_department');
-            $table->string('region');
             $table->text('resolution');
             $table->string('assignee_team')->nullable()->default(null);
             $table->string('performance');

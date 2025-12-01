@@ -9,13 +9,16 @@ import InputError from '@/Components/InputError.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownItem from '@/Components/Tickets/DropdownItem.vue';
 import { useToast } from '@/Composables/Toast';
+import { computed } from 'vue';
 
 const params = route().params;
 const page = usePage();
 const { success, error } = useToast()
 
 const props = defineProps({
-  user: Object
+    user: Object,
+    departments: Array,
+    teams: Array,
 });
 
 const form = useForm({
@@ -23,7 +26,15 @@ const form = useForm({
     email: props.user?.email ?? '',
     password: null,
     role: props.user?.role ?? '',
+    department: props.user?.department ?? '',
+    team: props.user?.team ?? '',
     _method: 'PUT'
+});
+
+const teams = props.teams;
+const selectedTeamLabel = computed(() => {
+    const selected = teams?.find(team => team.value === form.team);
+    return selected?.label ?? "Team";
 });
 
 const submit = () => {
@@ -164,6 +175,96 @@ const submit = () => {
                         </template>
                     </Dropdown>
                     <InputError class="mt-2" :message="form.errors.role" />
+                </div>
+
+                <!-- department -->
+                <div class="space-y-4">
+                    <InputLabel for="role" value="Department    " />
+                    <Dropdown
+                        align="right"
+                        width="48"
+                    >
+                        <template #trigger>
+                            <span class="inline-flex w-full rounded-md">
+                                <button
+                                    type="button"
+                                    class="inline-flex w-full items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-3 text-md font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
+                                >
+                                    <!-- {{ $page.props.auth.user.name }} -->
+                                    {{ form.department ?? "Department" }}
+                                    <svg
+                                        class="ms-2 h-4 w-4"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                            clip-rule="evenodd"
+                                        />
+                                    </svg>
+                                </button>
+                            </span>
+                        </template>
+
+                        <template #content>
+                            <DropdownItem
+                                v-for="department in $page.props.departments"
+                                :key="department.value"
+                                :value="department.value"
+                                @select="form.department = department.value"
+                            >
+                                {{ department.label }}
+                            </DropdownItem>
+                        </template>
+                    </Dropdown>
+                    <InputError class="mt-2" :message="form.errors.department" />
+                </div>
+
+                <!-- teams -->
+                <div class="space-y-4">
+                    <InputLabel for="role" value="Team" />
+                    <Dropdown
+                        align="right"
+                        width="48"
+                    >
+                        <template #trigger>
+                            <span class="inline-flex w-full rounded-md">
+                                <button
+                                    type="button"
+                                    class="inline-flex w-full items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-3 text-md font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
+                                >
+                                    <!-- {{ $page.props.auth.user.name }} -->
+                                    {{ selectedTeamLabel }}
+                                    <svg
+                                        class="ms-2 h-4 w-4"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 20 20"
+                                        fill="currentColor"
+                                    >
+                                        <path
+                                            fill-rule="evenodd"
+                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                            clip-rule="evenodd"
+                                        />
+                                    </svg>
+                                </button>
+                            </span>
+                        </template>
+
+                        <template #content>
+                            <DropdownItem
+                                v-for="team in $page.props.teams"
+                                :key="team.value"
+                                :value="team.value"
+                                @select="form.team = team.value"
+                            >
+                            {{ team.label }}
+                            </DropdownItem>
+                        </template>
+                    </Dropdown>
+                    <InputError class="mt-2" :message="form.errors.team" />
                 </div>
 
                 <div class="col-span-2 flex justify-end">
