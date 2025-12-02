@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum RegionEnum: string
+enum TicketServiceTypeEnum: string
 {
     case SERVICE = 'SERVICE';
     case INCIDENT = 'INCIDENT';

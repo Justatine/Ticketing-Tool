@@ -73,6 +73,8 @@ class UserController extends Controller
             'user' => $user,
             'departments' => $this->userService->getDepartments(),
             'teams' => $this->userService->getTeams(),
+            'regions' => $this->userService->getRegions(),
+            'roles' => $this->userService->getRoles(),
         ]);
     }
 

@@ -27,9 +27,9 @@ return new class extends Migration
             $table->string('service_type');
             $table->dateTime('date_reported')->default(FacadesDB::raw('CURRENT_TIMESTAMP'));
             $table->dateTime('date_closed')->nullable()->default(null);
-            $table->string('severity')->default('LOW');
+            $table->string('severity')->default('NORMAL');
             $table->string('reporter_department');
-            $table->text('resolution');
+            $table->text('resolution')->nullable()->default(null);
             $table->string('assignee_team')->nullable()->default(null);
             $table->string('performance');
             $table->decimal('sla', 8, 2);

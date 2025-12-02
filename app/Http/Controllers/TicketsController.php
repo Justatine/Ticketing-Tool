@@ -6,7 +6,9 @@ use App\Http\Middleware\NotAdmin;
 use App\Models\Tickets;
 use App\Models\User;
 use App\Http\Requests\StoreTicketsRequest;
+use App\Http\Requests\Tickets\StoreTicketRequest;
 use App\Http\Requests\UpdateTicketsRequest;
+use App\Services\TicketService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -17,6 +19,13 @@ use Illuminate\Support\Facades\Storage;
 
 class TicketsController extends Controller implements HasMiddleware
 {
+    protected TicketService $ticketService;
+
+    public function __construct(TicketService $ticketService)
+    {
+        $this->ticketService = $ticketService;
+    }
+
     public static function middleware(){
         return [
             new Middleware(
@@ -30,15 +39,9 @@ class TicketsController extends Controller implements HasMiddleware
      */
     public function index(Request $request)
     {
-        $tickets = Tickets::with(['assignee', 'reporter'])
-                    ->filter(request(['search', 'assignee_id']))
-                    ->latest()
-                    ->paginate(5)
-                    ->withQueryString();
-
         return Inertia::render('Tickets/Index', [
-            'tickets' => $tickets,
-            'searchTerm' => $request->search
+            'tickets' => $this->ticketService->getTickets(),
+            'searchTerm' => $request->search,
         ]);
     }
     /**
@@ -46,35 +49,33 @@ class TicketsController extends Controller implements HasMiddleware
      */
     public function create()
     {
-        $assignees = User::all();
         return Inertia::render('Tickets/Create',[
-            'assignees' => $assignees
+            'assignees' => $this->ticketService->getTicketAssignees(),
+            'categories' => $this->ticketService->getCategories(),
+            'classifications' => $this->ticketService->getClassifications(),
+            'service_types' => $this->ticketService->getServiceTypes(),
+            'severity' => $this->ticketService->getTicketSeverity(),
         ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreTicketRequest $request)
     {
         // dd($request);
-        $fields = $request->validate([
-            'title'=>['required','max:255'],
-            'description' => ['required', 'string'],
-            'status'=>['required','max:255'],
-            'priority'=>['required','max:255'],
-            'image'=>['nullable','file','max:3072','mimes:jpeg,jpg,png'],
-            'assignee_id' => ['required', 'integer', 'exists:users,id'],
-            'reporter_id' => ['required', 'integer', 'exists:users,id'],
-        ]);
+        $fields = $request->validated();
 
         if ($request->hasFile('image')) {
-            $fields['image'] =  Storage::disk('public')->put('images/tickets', $request->image);
+            $fields['image'] =  Storage::disk('public')
+                ->put('images/tickets', $request->image);
         }
-        // $request->user()->tickets()->create($fields);
-        Tickets::create($fields);
 
-        return redirect()->route('tickets.index')->with('status','Ticket created');
+        $this->ticketService->store($fields);
+
+        return redirect()
+            ->route('tickets.index')
+            ->with('flash', ['status' => 'Ticket created']);
     }
 
     /**
@@ -98,28 +99,24 @@ class TicketsController extends Controller implements HasMiddleware
      */
     public function edit(Tickets $ticket)
     {
-        $assignees = User::all();
         return Inertia::render('Tickets/Edit',[
             'ticket' => $ticket,
-            'assignees' => $assignees
+            'assignees' => $this->ticketService->getTicketAssignees(),
+            'categories' => $this->ticketService->getCategories(),
+            'classifications' => $this->ticketService->getClassifications(),
+            'service_types' => $this->ticketService->getServiceTypes(),
+            'severity' => $this->ticketService->getTicketSeverity(),
+            'statuses' => $this->ticketService->getStatus(),
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Tickets $ticket)
+    public function update(StoreTicketRequest $request, Tickets $ticket)
     {
         // dd($request);
-        $fields = $request->validate([
-            'title'=>['required','max:255'],
-            'description' => ['required', 'string'],
-            'status'=>['required','max:255'],
-            'priority'=>['required','max:255'],
-            'image'=>['nullable','file','max:3072','mimes:jpeg,jpg,png'],
-            'assignee_id' => ['required', 'integer', 'exists:users,id'],
-            'reporter_id' => ['required', 'integer', 'exists:users,id'],
-        ]);
+        $fields = $request->validated();
 
         if ($request->hasFile('image')) {
             if ($ticket->image) {
@@ -132,7 +129,7 @@ class TicketsController extends Controller implements HasMiddleware
         }
         // $request->user()->tickets()->create($fields);
         // Tickets::create($fields);
-        $ticket->update($fields);
+        $this->ticketService->update($ticket, $fields);
 
         return redirect()->route('tickets.index')->with('status','Ticket updated');
     }

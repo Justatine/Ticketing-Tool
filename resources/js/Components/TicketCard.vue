@@ -1,6 +1,8 @@
 <script setup>
 import { Link } from '@inertiajs/vue3'
 import { router } from '@inertiajs/vue3';
+import TicketBadge from './Tickets/TicketBadge.vue';
+import TicketTime from './Tickets/TicketTime.vue';
 
 const params = route().params;
 defineProps({
@@ -13,6 +15,8 @@ const selectUser = (id) => {
         search: params.search
     })
 }
+
+
 </script>
 
 <template>
@@ -36,17 +40,29 @@ const selectUser = (id) => {
         <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
           {{ ticket.title }}
         </h3>
+
         <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
-          {{ ticket.description }} - {{ ticket.status }}
+            {{ ticket.description }} - <TicketBadge :status="ticket.status" type="status" /> -
+            <TicketTime
+                :date="ticket.date_reported"
+                :hours="4"
+                :show-seconds="true"
+                :status="ticket.status"
+                :dateClosed="ticket.date_closed"
+            />
         </p>
+
         <p class="text-sm text-gray-500 dark:text-gray-400">
           Created at {{ new Date(ticket.created_at).toLocaleDateString() }}
           by
 
           <span class="underline text-blue-500" @click="selectUser(ticket.assignee.id)">
-            {{ ticket.assignee?.name ?? 'Unassigned' }}
+            {{ ticket.reporter?.name ?? 'Unassigned' }}
           </span>
+
+          to be addressed by  {{ ticket.assignee?.name ?? 'Unassigned' }}
         </p>
+
       </div>
 
       <!-- Optional Action Button -->

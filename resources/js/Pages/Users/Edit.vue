@@ -10,6 +10,10 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownItem from '@/Components/Tickets/DropdownItem.vue';
 import { useToast } from '@/Composables/Toast';
 import { computed } from 'vue';
+import RoleDropdown from '@/Components/Forms/Dropdowns/RoleDropdown.vue';
+import DepartmentDropdown from '@/Components/Forms/Dropdowns/DepartmentDropdown.vue';
+import TeamDropdown from '@/Components/Forms/Dropdowns/TeamDropdown.vue';
+import RegionDropdown from '@/Components/Forms/Dropdowns/RegionDropdown.vue';
 
 const params = route().params;
 const page = usePage();
@@ -17,8 +21,10 @@ const { success, error } = useToast()
 
 const props = defineProps({
     user: Object,
-    departments: Array,
+    departments:Array,
     teams: Array,
+    regions: Array,
+    roles: Array
 });
 
 const form = useForm({
@@ -28,13 +34,8 @@ const form = useForm({
     role: props.user?.role ?? '',
     department: props.user?.department ?? '',
     team: props.user?.team ?? '',
+    region: props.user?.region ?? '',
     _method: 'PUT'
-});
-
-const teams = props.teams;
-const selectedTeamLabel = computed(() => {
-    const selected = teams?.find(team => team.value === form.team);
-    return selected?.label ?? "Team";
 });
 
 const submit = () => {
@@ -139,133 +140,33 @@ const submit = () => {
                     <InputError class="mt-2" :message="form.errors.password" />
                 </div>
 
-                <div class="space-y-4">
-                    <InputLabel for="role" value="Role" />
-                    <Dropdown
-                        align="right"
-                        width="48"
-                    >
-                        <template #trigger>
-                            <span class="inline-flex w-full rounded-md">
-                                <button
-                                    type="button"
-                                    class="inline-flex w-full items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-3 text-md font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
-                                >
-                                    <!-- {{ $page.props.auth.user.name }} -->
-                                    {{ form.role ?? "Role" }}
-                                    <svg
-                                        class="ms-2 h-4 w-4"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                    >
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                            clip-rule="evenodd"
-                                        />
-                                    </svg>
-                                </button>
-                            </span>
-                        </template>
-
-                        <template #content>
-                            <DropdownItem value="Admin" @select="form.role = $event">Admin</DropdownItem>
-                            <DropdownItem value="User" @select="form.role = $event">User</DropdownItem>
-                        </template>
-                    </Dropdown>
-                    <InputError class="mt-2" :message="form.errors.role" />
-                </div>
+                <!-- roles -->
+                <RoleDropdown
+                    v-model="form.role"
+                    :roles="$page.props.roles"
+                    :error="form.errors.role"
+                />
 
                 <!-- department -->
-                <div class="space-y-4">
-                    <InputLabel for="role" value="Department    " />
-                    <Dropdown
-                        align="right"
-                        width="48"
-                    >
-                        <template #trigger>
-                            <span class="inline-flex w-full rounded-md">
-                                <button
-                                    type="button"
-                                    class="inline-flex w-full items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-3 text-md font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
-                                >
-                                    <!-- {{ $page.props.auth.user.name }} -->
-                                    {{ form.department ?? "Department" }}
-                                    <svg
-                                        class="ms-2 h-4 w-4"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                    >
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                            clip-rule="evenodd"
-                                        />
-                                    </svg>
-                                </button>
-                            </span>
-                        </template>
-
-                        <template #content>
-                            <DropdownItem
-                                v-for="department in $page.props.departments"
-                                :key="department.value"
-                                :value="department.value"
-                                @select="form.department = department.value"
-                            >
-                                {{ department.label }}
-                            </DropdownItem>
-                        </template>
-                    </Dropdown>
-                    <InputError class="mt-2" :message="form.errors.department" />
-                </div>
+                <DepartmentDropdown
+                    v-model="form.department"
+                    :departments="$page.props.departments"
+                    :error="form.errors.department"
+                />
 
                 <!-- teams -->
-                <div class="space-y-4">
-                    <InputLabel for="role" value="Team" />
-                    <Dropdown
-                        align="right"
-                        width="48"
-                    >
-                        <template #trigger>
-                            <span class="inline-flex w-full rounded-md">
-                                <button
-                                    type="button"
-                                    class="inline-flex w-full items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-3 text-md font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
-                                >
-                                    <!-- {{ $page.props.auth.user.name }} -->
-                                    {{ selectedTeamLabel }}
-                                    <svg
-                                        class="ms-2 h-4 w-4"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                    >
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                            clip-rule="evenodd"
-                                        />
-                                    </svg>
-                                </button>
-                            </span>
-                        </template>
+                <TeamDropdown
+                    v-model="form.team"
+                    :teams="$page.props.teams"
+                    :error="form.errors.team"
+                />
 
-                        <template #content>
-                            <DropdownItem
-                                v-for="team in $page.props.teams"
-                                :key="team.value"
-                                :value="team.value"
-                                @select="form.team = team.value"
-                            >
-                            {{ team.label }}
-                            </DropdownItem>
-                        </template>
-                    </Dropdown>
-                    <InputError class="mt-2" :message="form.errors.team" />
-                </div>
+                <!-- region -->
+                <RegionDropdown
+                    v-model="form.region"
+                    :regions="$page.props.regions"
+                    :error="form.errors.region"
+                />
 
                 <div class="col-span-2 flex justify-end">
                     <PrimaryButton>
