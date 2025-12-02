@@ -39,6 +39,9 @@ class UserController extends Controller
         // return Inertia::render('Users/Create');
         return Inertia::render('Users/Create', [
             'departments' => $this->userService->getDepartments(),
+            'teams' => $this->userService->getTeams(),
+            'regions' => $this->userService->getRegions(),
+            'roles' => $this->userService->getRoles(),
         ]);
     }
 
@@ -67,7 +70,11 @@ class UserController extends Controller
     public function edit(User $user)
     {
         return Inertia::render('Users/Edit',[
-            'user' => $user
+            'user' => $user,
+            'departments' => $this->userService->getDepartments(),
+            'teams' => $this->userService->getTeams(),
+            'regions' => $this->userService->getRegions(),
+            'roles' => $this->userService->getRoles(),
         ]);
     }
 

@@ -8,6 +8,8 @@ import DangerButton from '@/Components/DangerButton.vue';
 import AddTicketModal from '@/Components/Tickets/AddTicketModal.vue';
 import { ref } from 'vue';
 import { useToast } from '@/Composables/Toast';
+import TicketBadge from '@/Components/Tickets/TicketBadge.vue';
+import TicketTime from '@/Components/Tickets/TicketTime.vue';
 
 const showModal = ref(false)
 const { success, error } = useToast()
@@ -133,17 +135,9 @@ console.log(props.ticket.id)
                 <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-8">
                     <!-- Left Column -->
                     <div class="flex flex-col space-y-6">
-
                         <div class="space-y-2">
                             <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Status</h3>
-                            <span
-                            class="inline-block px-3 py-1 text-sm font-medium rounded-full"
-                            :class="ticket.status.toLowerCase() === 'open' ? 'bg-green-100 text-green-800'
-                                : ticket.status.toLowerCase() == 'closed' ? 'bg-red-100 text-red-800'
-                                : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300'"
-                            >
-                            {{ ticket.status }}
-                            </span>
+                            <TicketBadge :status="ticket.status" type="status" />
                         </div>
                     </div>
 
@@ -171,8 +165,51 @@ console.log(props.ticket.id)
                             </div>
 
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Created At</h3>
-                                {{ new Date(ticket.created_at).toLocaleString("en-US", {
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Category</h3>
+                                <p class="text-gray-600 dark:text-gray-300">{{ ticket.category_label }}</p>
+                            </div>
+
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Classification</h3>
+                                <p class="text-gray-600 dark:text-gray-300">{{ ticket.classification_label }}</p>
+                            </div>
+
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Service Type</h3>
+                                <p class="text-gray-600 dark:text-gray-300">{{ ticket.service_type_label }}</p>
+                            </div>
+
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Severity</h3>
+                                <p class="text-gray-600 dark:text-gray-300">{{ ticket.severity_label }}</p>
+                            </div>
+
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Assigned Team</h3>
+                                <p class="text-gray-600 dark:text-gray-300">{{ ticket.assignee_team_label }}</p>
+                            </div>
+
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Reporter Department</h3>
+                                <p class="text-gray-600 dark:text-gray-300">{{ ticket.reporter_department_label }}</p>
+                            </div>
+
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Date Reported</h3>
+                                {{ new Date(ticket.date_reported).toLocaleString("en-US", {
+                                    year: "numeric",
+                                    month: "long",
+                                    day: "numeric",
+                                    hour: "numeric",
+                                    minute: "numeric",
+                                    hour12: true
+                                }) }}
+                            </div>
+
+
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Date Closed</h3>
+                                {{ new Date(ticket.date_closed).toLocaleString("en-US", {
                                     year: "numeric",
                                     month: "long",
                                     day: "numeric",
@@ -183,17 +220,22 @@ console.log(props.ticket.id)
                             </div>
 
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Updated At</h3>
-                               {{ new Date(ticket.updated_at).toLocaleString("en-US", {
-                                    year: "numeric",
-                                    month: "long",
-                                    day: "numeric",
-                                    hour: "numeric",
-                                    minute: "numeric",
-                                    hour12: true
-                                }) }}
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Resolution</h3>
+                                <p class="text-gray-600 dark:text-gray-300">{{ ticket.resolution ?? "None" }}</p>
                             </div>
 
+                            <div>
+                                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200">Remaining Time</h3>
+                                <p class="text-gray-600 dark:text-gray-300">
+                                    <TicketTime
+                                        :date="ticket.date_reported"
+                                        :hours="4"
+                                        :show-seconds="true"
+                                        :status="ticket.status"
+                                        :updatedAt="ticket.updated_at"
+                                    />
+                                </p>
+                            </div>
                         </div>
 
                     </div>

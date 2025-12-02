@@ -7,18 +7,23 @@ import TextInput from '@/Components/TextInput.vue';
 import { router, useForm, usePage } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
 import InputLabel from '@/Components/InputLabel.vue';
-import Dropdown from '@/Components/Tickets/Dropdown.vue';
 import DropdownLink from '@/Components/Tickets/DropdownItem.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import DropdownItem from '@/Components/Tickets/DropdownItem.vue';
 import ImageUpload from '@/Components/Tickets/ImageUpload.vue';
 import InputError from '@/Components/InputError.vue';
 
+import Dropdown from '@/Components/Forms/Dropdowns/Tickets/Dropdown.vue';
+
 const params = route().params;
 const page = usePage();
 
 const props = defineProps({
-  assignees: Object
+  assignees: Object,
+  categories: Array,
+  classifications: Array,
+  service_types: Array,
+  severity: Array,
 });
 
 console.log(props.assignees)
@@ -30,8 +35,23 @@ const form = useForm({
     assignee_id:null,
     priority:null,
     image:null,
-    reporter_id: page.props.auth.user.id
+    reporter_id: page.props.auth.user.id,
+    category:null,
+    classification:null,
+    service_type:null,
+    severity:null,
 });
+
+const submit = () => {
+  form.post(route('tickets.store'), {
+    onSuccess: () => {
+      success('User Created', 'Ticket created')
+    },
+    onError: (errors) => {
+      error('Create Failed', 'Please fix the errors and try again.')
+    }
+  })
+}
 </script>
 
 <template>
@@ -66,7 +86,7 @@ const form = useForm({
             </div>
 
             <form
-                @submit.prevent="form.post(route('tickets.store'))"
+                @submit.prevent="submit"
                 class="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                 <div class="space-y-4">
                     <InputLabel for="title" value="Title" />
@@ -104,89 +124,47 @@ const form = useForm({
                     <InputError class="mt-2" :message="form.errors.description" />
                 </div>
 
-                <div class="space-y-4">
-                    <InputLabel for="description" value="Assign to" />
+                <!-- department -->
+                <Dropdown
+                    v-model="form.category"
+                    :data="$page.props.categories"
+                    :error="form.errors.category"
+                    label="Category"
+                    placeholder="Select Category"
+                />
 
-                   <Dropdown
-                        align="right"
-                        width="48"
-                    >
-                        <template #trigger>
-                            <span class="inline-flex w-full rounded-md">
-                                <button
-                                    type="button"
-                                    class="inline-flex w-full items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-3 text-md font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
-                                >
-                                    <!-- {{ $page.props.auth.user.name }} -->
-                                {{ form.assignee_id ? assignees.find(u => u.id === form.assignee_id)?.name : 'Select Assignee' }}
-                                    <svg
-                                        class="ms-2 h-4 w-4"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                    >
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                            clip-rule="evenodd"
-                                        />
-                                    </svg>
-                                </button>
-                            </span>
-                        </template>
+                <!-- department -->
+                <Dropdown
+                    v-model="form.classification"
+                    :data="$page.props.classifications"
+                    :error="form.errors.classification"
+                    label="Classification"
+                    placeholder="Select Classification"
+                />
 
-                        <template #content>
-                            <DropdownItem
-                                v-for="user in props.assignees"
-                                :key="user.id"
-                                :value="user.id"
-                                @select="form.assignee_id = $event"
-                            >
-                                {{ user.name }}
-                            </DropdownItem>
-                        </template>
-                    </Dropdown>
-                    <InputError class="mt-2" :message="form.errors.assignee_id" />
-                </div>
+                <Dropdown
+                    v-model="form.service_type"
+                    :data="$page.props.service_types"
+                    :error="form.errors.service_type"
+                    label="Service type"
+                    placeholder="Select Service type"
+                />
 
-                <div class="space-y-4">
-                    <InputLabel for="description" value="Priority level" />
-                    <Dropdown
-                        align="right"
-                        width="48"
-                    >
-                        <template #trigger>
-                            <span class="inline-flex w-full rounded-md">
-                                <button
-                                    type="button"
-                                    class="inline-flex w-full items-center justify-between rounded-md border border-gray-200 bg-white px-3 py-3 text-md font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
-                                >
-                                    <!-- {{ $page.props.auth.user.name }} -->
-                                    {{ form.priority ?? "Priority" }}
-                                    <svg
-                                        class="ms-2 h-4 w-4"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 20 20"
-                                        fill="currentColor"
-                                    >
-                                        <path
-                                            fill-rule="evenodd"
-                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                            clip-rule="evenodd"
-                                        />
-                                    </svg>
-                                </button>
-                            </span>
-                        </template>
+                <Dropdown
+                    v-model="form.severity"
+                    :data="$page.props.severity"
+                    :error="form.errors.severity"
+                    label="Severity"
+                    placeholder="Select Severity"
+                />
 
-                        <template #content>
-                            <DropdownItem value="Low" @select="form.priority = $event">Low</DropdownItem>
-                            <DropdownItem value="Normal" @select="form.priority = $event">Normal</DropdownItem>
-                            <DropdownItem value="High" @select="form.priority = $event">High</DropdownItem>
-                        </template>
-                    </Dropdown>
-                    <InputError class="mt-2" :message="form.errors.priority" />
-                </div>
+                <Dropdown
+                    v-model="form.assignee_id"
+                    :data="$page.props.assignees"
+                    :error="form.errors.assignee_id"
+                    label="Assignee"
+                    placeholder="Select Assignee"
+                />
 
                 <div class="space-y-4 col-span-2">
                     <ImageUpload @image="
