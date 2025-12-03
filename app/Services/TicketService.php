@@ -30,6 +30,7 @@ class TicketService
         $data['sla'] = 0.80;
         $data['tat'] = 0.00;
         $data['total_tat'] = 0.00;
+        $data['resolution'] = null;
 
         return Tickets::create($data);
     }

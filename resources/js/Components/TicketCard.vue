@@ -1,79 +1,67 @@
 <script setup>
-import { Link } from '@inertiajs/vue3'
+import { Link } from '@inertiajs/vue3';
 import { router } from '@inertiajs/vue3';
 import TicketBadge from './Tickets/TicketBadge.vue';
 import TicketTime from './Tickets/TicketTime.vue';
 
-const params = route().params;
 defineProps({
   ticket: Object
 });
 
 const selectUser = (id) => {
     router.get(route("tickets.index"), {
-        assignee_id : id,
-        search: params.search
+        assignee_id: id
     })
 }
-
-
 </script>
 
 <template>
-    <div
-        class="bg-white dark:bg-slate-800 rounded-2xl shadow-md overflow-hidden transition transform hover:scale-[1.02] hover:shadow-xl duration-300 flex flex-col h-full"
-    >
-    <!-- Image or Header Block -->
-    <Link
-        :href="route('tickets.show', ticket.id)"
-    >
-      <img
-        :src="`/storage/${ticket.image}`"
-        alt="Ticket image"
-        class="w-full h-48 object-cover object-center bg-slate-300"
+  <div class="bg-white border border-gray-200 dark:bg-slate-800 rounded-xl shadow-sm p-4 flex flex-col gap-2 hover:shadow-md transition duration-200">
+
+    <div class="flex justify-between items-start">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+        # {{ ticket.id }}
+      </h3>
+      <TicketBadge :status="ticket.severity" type="severity" />
+    </div>
+
+    <p class="text-sm text-gray-600 dark:text-gray-400">
+      {{ ticket.title }}
+    </p>
+
+    <p class="text-xs text-gray-500 dark:text-gray-400">
+      {{ ticket.description }}
+      <!-- Created by
+      <span class="underline text-blue-500 cursor-pointer" @click="selectUser(ticket.reporter?.id)">
+        {{ ticket.reporter?.name ?? 'Unassigned' }}
+      </span>
+      to be addressed by
+      <span class="font-medium">
+        {{ ticket.assignee?.name ?? 'Unassigned' }}
+      </span> -->
+    </p>
+
+    <div class="text-xs text-gray-400 flex justify-between items-center">
+      <TicketTime
+        :date="ticket.date_reported"
+        :hours="4"
+        :show-seconds="true"
+        :status="ticket.status"
+        :dateClosed="ticket.date_closed"
       />
-    </Link>
+      <span>{{ new Date(ticket.created_at).toLocaleDateString() }}</span>
+    </div>
 
-    <!-- Card Content -->
-    <div class="p-5 flex-1 flex flex-col justify-between">
-      <div>
-        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-          {{ ticket.title }}
-        </h3>
-
-        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
-            {{ ticket.description }} - <TicketBadge :status="ticket.status" type="status" /> -
-            <TicketTime
-                :date="ticket.date_reported"
-                :hours="4"
-                :show-seconds="true"
-                :status="ticket.status"
-                :dateClosed="ticket.date_closed"
-            />
+    <div class="flex justify-between pt-2">
+        <p class="text-xs text-gray-500 dark:text-gray-400">
+            Requested by: {{ ticket.reporter?.name }}
         </p>
-
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-          Created at {{ new Date(ticket.created_at).toLocaleDateString() }}
-          by
-
-          <span class="underline text-blue-500" @click="selectUser(ticket.assignee.id)">
-            {{ ticket.reporter?.name ?? 'Unassigned' }}
-          </span>
-
-          to be addressed by  {{ ticket.assignee?.name ?? 'Unassigned' }}
-        </p>
-
-      </div>
-
-      <!-- Optional Action Button -->
-      <div class="mt-4">
         <Link
-          :href="route('tickets.show', ticket.id)"
-          class="inline-block px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition"
+            :href="route('tickets.show', ticket.id)"
+            class="text-indigo-600 text-sm font-medium hover:underline"
         >
-          View Details
+            View Details
         </Link>
-      </div>
     </div>
   </div>
 </template>

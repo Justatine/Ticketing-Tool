@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('image')->default(null);
             $table->foreignId('assignee_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('reporter_id')->constrained('users')->onDelete('cascade');
-            $table->string('reporter_email', 255)->unique();
-            $table->string('assignee_email', 255)->unique();
+            $table->string('reporter_email', 255);
+            $table->string('assignee_email', 255);
             $table->string('category');
             $table->string('classification');
             $table->string('service_type');

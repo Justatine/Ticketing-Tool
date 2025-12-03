@@ -24,7 +24,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $users = User::latest()
-                    ->paginate(2)
+                    ->paginate(10)
                     ->withQueryString();
         return Inertia::render('Users/Index',[
             'users' => $users

@@ -7,6 +7,7 @@ import TextInput from '@/Components/TextInput.vue';
 import { router, useForm } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { Funnel, Plus } from 'lucide-vue-next';
 
 const props = defineProps({
   tickets: Object,
@@ -38,51 +39,50 @@ const search = () =>{
       </h2>
     </template>
 
-    <div class="py-12">
-      <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div class="">
+      <div class="max-w-full w-full">
         <div class="bg-white dark:bg-slate-800 shadow-sm sm:rounded-lg p-6">
 
             <!-- Search -->
             <div class="flex items-center justify-between mb-4">
-
-                <div>
-                    Filters
-                </div>
-                <div class="flex justify-end gap-2">
-                    <div>
-                        <form @submit.prevent="search">
-                            <TextInput
-                                type="search"
-                                label=""
-                                icon="magnifying-glass"
-                                placeholder="Search..."
-                                v-model="form.search"
-                            />
-                        </form>
-                    </div>
-                    <div class="">
-                        <Link
-                            :href="route('tickets.create')"
-                            class=""
-                        >
-                            <PrimaryButton>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                                </svg>
-                                New Ticket
-                            </PrimaryButton>
-                        </Link>
-                    </div>
-                </div>
+            <!-- Search Bar -->
+            <div class="flex-1">
+                <form @submit.prevent="search">
+                <TextInput
+                    class="w-full"
+                    type="search"
+                    label=""
+                    icon="magnifying-glass"
+                    placeholder="Search title, description or ID..."
+                    v-model="form.search"
+                />
+                </form>
             </div>
+
+            <!-- Buttons -->
+            <div class="flex gap-2 ml-4">
+                <PrimaryButton class="flex items-center gap-1">
+                    <Funnel class="w-4 h-4"/>
+                    Filter
+                </PrimaryButton>
+
+                <Link :href="route('tickets.create')">
+                    <PrimaryButton class="flex items-center gap-1">
+                        <Plus class="w-4 h-4"/>
+                        New Ticket
+                    </PrimaryButton>
+                </Link>
+            </div>
+            </div>
+
 
             <div v-if="tickets.data.length" class="space-y-8">
                 <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                <TicketCard
-                    v-for="ticket in tickets.data"
-                    :key="ticket.id"
-                    :ticket="ticket"
-                />
+                    <TicketCard
+                        v-for="ticket in tickets.data"
+                        :key="ticket.id"
+                        :ticket="ticket"
+                    />
                 </div>
 
                 <PaginationLinks :paginator="tickets" />

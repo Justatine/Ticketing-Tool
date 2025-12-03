@@ -76,10 +76,10 @@ function handleSort(column, order) {
         </thead>
         <tbody>
             <UserDatatableRow
-            v-for="(row, index) in sortedRows"
-            :key="row.id ?? index"
-            :row="row"
-            :columns="columns"
+                v-for="(row, index) in sortedRows"
+                :key="row.id ?? index"
+                :row="row"
+                :columns="columns"
             />
         </tbody>
         </table>

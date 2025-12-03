@@ -33,6 +33,15 @@ class UserSeeder extends Seeder
                 'team' => 'ITPM1',
                 'region' => 'VIS',
             ],
+            [
+                'name' => 'Jeff Mahinay',
+                'email' => 'jeffmahinay@gmail.com',
+                'password' => Hash::make('qwe'),
+                'role' => 'USER',
+                'department' => 'IT',
+                'team' => 'INFRA',
+                'region' => 'VIS',
+            ],
         ]);
     }
 }

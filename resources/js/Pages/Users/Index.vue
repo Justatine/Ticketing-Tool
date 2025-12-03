@@ -1,8 +1,10 @@
 <script setup>
 import Datatable from '@/Components/Datatable/Datatable.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
+import StatCard from '@/Components/UI/StatCard.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import { TicketCheck, TicketMinus, TicketPlus, TicketX } from 'lucide-vue-next';
 
 const props = defineProps({
     'users' : Object
@@ -33,12 +35,13 @@ const rows = props.users;
       </h2>
     </template>
 
-    <div class="py-12">
-      <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div class="bg-white dark:bg-slate-800 shadow-sm sm:rounded-lg p-6">
+    <div class="py-1">
+      <div class="max-w-full w-full">
+
+        <div class="bg-white border border-gray-200 dark:bg-slate-800 shadow-sm sm:rounded-lg p-6">
 
             <div class="flex justify-between pb-4">
-                <p class="">Users page</p>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Manage Users</h1>
                 <Link
                     :href="route('users.create')"
                     class=""
@@ -57,6 +60,7 @@ const rows = props.users;
                 :rows="rows"
             />
         </div>
+
       </div>
     </div>
   </AuthenticatedLayout>
