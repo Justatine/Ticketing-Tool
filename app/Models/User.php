@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Enums\RoleEnum;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Tickets;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -28,6 +30,16 @@ class User extends Authenticatable implements MustVerifyEmail
         'region',
     ];
 
+    protected $appends = [
+        'role_label'
+    ];
+
+    protected function roleLabel(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->role ? RoleEnum::from($this->role)->label() : null,
+        );
+    }
     /**
      * The attributes that should be hidden for serialization.
      *

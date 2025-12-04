@@ -45,6 +45,6 @@ const badgeClasses = computed(() => {
     :class="badgeClasses"
     class="text-xs font-medium px-2 py-1 rounded capitalize inline-block"
   >
-    {{ status }}
+    {{ props.type == 'status' ? '' : 'Level: ' }} {{ status }}
   </span>
 </template>

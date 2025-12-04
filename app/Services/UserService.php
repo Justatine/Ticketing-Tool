@@ -43,6 +43,50 @@ class UserService
         $user->delete();
     }
 
+
+    /**
+     * Get all user form options for dropdowns.
+     */
+    public function getUserCardData(): array
+    {
+        return [
+            'total_users' => User::count(),
+            'total_admins' => User::where('role', RoleEnum::SA->value)->count(),
+        ];
+    }
+
+    /**
+     * Get all user form options for dropdowns.
+     */
+    public function getUserFormOptions(): object
+    {
+        return (object) [
+            'regions' => $this->mapEnumToOptions(RegionEnum::cases()),
+            'teams' => $this->mapEnumToOptions(TeamEnum::cases()),
+            'departments' => $this->mapEnumToOptions(DepartmentEnum::cases()),
+            'roles' => $this->mapEnumToOptions(RoleEnum::cases()),
+        ];
+    }
+
+    public function getPaginatedUsers($perPage)
+    {
+        $user_list = User::latest()
+            ->paginate($perPage)
+            ->withQueryString();
+
+        return $user_list;
+    }
+
+    /**
+     * Map enum cases to dropdown options.
+     */
+    private function mapEnumToOptions(array $cases): array
+    {
+        return collect($cases)->map(fn($val) => [
+            'value' => $val->value,
+            'label' => $val->label(),
+        ])->toArray();
+    }
     /**
      * Get all regions for dropdown.
      */

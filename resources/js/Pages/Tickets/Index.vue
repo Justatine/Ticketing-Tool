@@ -7,11 +7,14 @@ import TextInput from '@/Components/TextInput.vue';
 import { router, useForm } from '@inertiajs/vue3';
 import { Link } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
-import { Funnel, Plus } from 'lucide-vue-next';
+import { Clock, Funnel, Plus, TicketSlash } from 'lucide-vue-next';
+import StatCard from '@/Components/UI/StatCard.vue';
+import { TicketCheck, TicketMinus, TicketPlus, TicketX } from 'lucide-vue-next';
 
 const props = defineProps({
-  tickets: Object,
-  searchTerm: String
+    tickets: Object,
+    searchTerm: String,
+    ticket_card_data: Object
 });
 
 const form = useForm({
@@ -40,8 +43,51 @@ const search = () =>{
     </template>
 
     <div class="">
-      <div class="max-w-full w-full">
-        <div class="bg-white dark:bg-slate-800 shadow-sm sm:rounded-lg p-6">
+        <div class="space-y-6">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Ticket Dashboard</h1>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-3">
+                <StatCard
+                    title="Open/New "
+                    :value="props.ticket_card_data.total_open_new"
+                    :is-positive="true"
+                    :icon="TicketPlus"
+                />
+                <StatCard
+                    title="In Progress"
+                    :value="props.ticket_card_data.total_inprog"
+                    :is-positive="true"
+                    :icon="TicketMinus"
+                />
+                <StatCard
+                    title="Closed"
+                    :value="props.ticket_card_data.total_closed"
+                    :is-positive="false"
+                    :icon="TicketCheck"
+                />
+                <StatCard
+                    title="Pending"
+                    :value="props.ticket_card_data.total_pending"
+                    :is-positive="true"
+                    :icon="Clock"
+                />
+                <StatCard
+                    title="Failed"
+                    :value="props.ticket_card_data.total_failed_unresolved"
+                    :is-positive="true"
+                    :icon="TicketX"
+                />
+                <StatCard
+                    title="Voided"
+                    :value="props.ticket_card_data.total_voided"
+                    :is-positive="true"
+                    :icon="TicketX"
+                />
+            </div>
+        </div>
+
+      <div class="max-w-full w-full pt-4">
+        <div class="bg-white border border-gray-200 dark:bg-slate-800 shadow-sm sm:rounded-lg p-6">
 
             <!-- Search -->
             <div class="flex items-center justify-between mb-4">

@@ -58,7 +58,7 @@ const closeSidebar = () => {
         <div class="flex items-center gap-2">
           <div class="w-8 h-8 rounded-lg flex items-center justify-center">
             <!-- <span class="text-white font-bold text-sm">A</span> -->
-            <img src="assets/images/company-logo.png" alt="Company Logo">
+            <img src="/assets/images/company-logo.png" alt="Company Logo">
           </div>
           <span class="text-lg font-bold text-gray-900 dark:text-white">Ticketing Tool</span>
         </div>

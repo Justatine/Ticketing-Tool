@@ -42,6 +42,7 @@ const props = defineProps({
 });
 
 console.log(props.ticket.id)
+console.log(props.canModify)
 
 </script>
 

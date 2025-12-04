@@ -23,11 +23,10 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $users = User::latest()
-                    ->paginate(10)
-                    ->withQueryString();
         return Inertia::render('Users/Index',[
-            'users' => $users
+            'users' => $this->userService->getPaginatedUsers(10),
+            'user_details' => $this->userService->getUserFormOptions(),
+            'user_card_data' => $this->userService->getUserCardData()
         ]);
     }
 

@@ -42,6 +42,7 @@ class TicketsController extends Controller implements HasMiddleware
         return Inertia::render('Tickets/Index', [
             'tickets' => $this->ticketService->getTickets(),
             'searchTerm' => $request->search,
+            'ticket_card_data' => $this->ticketService->getTicketCardData()
         ]);
     }
     /**
@@ -99,6 +100,8 @@ class TicketsController extends Controller implements HasMiddleware
      */
     public function edit(Tickets $ticket)
     {
+        Gate::authorize('update', $ticket);
+
         return Inertia::render('Tickets/Edit',[
             'ticket' => $ticket,
             'assignees' => $this->ticketService->getTicketAssignees(),

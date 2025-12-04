@@ -8,7 +8,8 @@ import UserDatatableRow from './UserDatatableRow.vue';
 
 const props = defineProps({
   columns: { type: Array, required: true },
-  rows: { type: Object, required: true }
+  rows: { type: Object, required: true },
+  user_details: { type:Object, required:true}
 });
 
 const searchQuery = ref('');
@@ -27,9 +28,10 @@ const filteredRows = computed(() => {
     );
   }
 
+  console.log('activeFilters.value.role: '+activeFilters.value.Role);
   // filters
-  if (activeFilters.value.role) {
-    data = data.filter(row => row.role === activeFilters.value.role);
+  if (activeFilters.value.Role) {
+    data = data.filter(row => row.role === activeFilters.value.Role);
   }
 
   return data;
@@ -57,6 +59,7 @@ function handleSort(column, order) {
     <DatatableSearch
         v-model="searchQuery"
         v-model:filters="activeFilters"
+        :user_details="props.user_details"
     />
 
     <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">

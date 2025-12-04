@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum RegionEnum: string
+enum TicketPerformanceEnum: string
 {
     case PASS = 'PASS';
     case FAIL = 'FAIL';

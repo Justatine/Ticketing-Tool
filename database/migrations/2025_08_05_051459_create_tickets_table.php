@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->string('status')->default('NEW');
-            $table->string('image')->default(null);
+            $table->string('image')->nullable()->default(null);
             $table->foreignId('assignee_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('reporter_id')->constrained('users')->onDelete('cascade');
             $table->string('reporter_email', 255);

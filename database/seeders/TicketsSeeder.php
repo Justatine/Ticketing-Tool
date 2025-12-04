@@ -2,10 +2,16 @@
 
 namespace Database\Seeders;
 
+use App\Enums\TicketCategoryEnum;
+use App\Enums\TicketClassificationEnum;
+use App\Enums\TicketServiceTypeEnum;
+use App\Enums\TicketSeverityEnum;
+use App\Enums\TicketStatusEnum;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Tickets;
 use App\Models\User;
+use Carbon\Carbon;
 
 class TicketsSeeder extends Seeder
 {
@@ -14,94 +20,53 @@ class TicketsSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create some users first if they don't exist
-        $users = User::factory(5)->create();
+        $users = User::all();
 
-        $ticketData = [
-            [
-                'title' => 'Website Login Issue',
-                'description' => 'Users are unable to log in to the website. Getting error 500 when trying to access the login page.',
-                'status' => 'Open',
-                'priority' => 'High',
-                'assignee_id' => $users->random()->id,
-                'reporter_id' => $users->random()->id,
-            ],
-            [
-                'title' => 'Database Connection Error',
-                'description' => 'Application is showing database connection errors in production environment.',
-                'status' => 'In Progress',
-                'priority' => 'Critical',
-                'assignee_id' => $users->random()->id,
-                'reporter_id' => $users->random()->id,
-            ],
-            [
-                'title' => 'Email Notifications Not Working',
-                'description' => 'Users are not receiving email notifications for password reset and account verification.',
-                'status' => 'Open',
-                'priority' => 'Medium',
-                'assignee_id' => $users->random()->id,
-                'reporter_id' => $users->random()->id,
-            ],
-            [
-                'title' => 'Mobile App Crashes on iOS',
-                'description' => 'Mobile application crashes immediately after launch on iOS devices running version 15.0.',
-                'status' => 'Resolved',
-                'priority' => 'High',
-                'assignee_id' => $users->random()->id,
-                'reporter_id' => $users->random()->id,
-            ],
-            [
-                'title' => 'Payment Gateway Integration Issue',
-                'description' => 'Payment processing is failing for credit card transactions. Error code: PAYMENT_DECLINED.',
-                'status' => 'In Progress',
-                'priority' => 'Critical',
-                'assignee_id' => $users->random()->id,
-                'reporter_id' => $users->random()->id,
-            ],
-            [
-                'title' => 'User Profile Update Bug',
-                'description' => 'Users cannot update their profile information. Form submission fails with validation errors.',
-                'status' => 'Open',
-                'priority' => 'Low',
-                'assignee_id' => $users->random()->id,
-                'reporter_id' => $users->random()->id,
-            ],
-            [
-                'title' => 'Search Functionality Broken',
-                'description' => 'Search feature is not returning any results regardless of the search term entered.',
-                'status' => 'Closed',
-                'priority' => 'Medium',
-                'assignee_id' => $users->random()->id,
-                'reporter_id' => $users->random()->id,
-            ],
-            [
-                'title' => 'File Upload Size Limit',
-                'description' => 'Users cannot upload files larger than 1MB. Need to increase the file size limit to 10MB.',
-                'status' => 'Open',
-                'priority' => 'Low',
-                'assignee_id' => $users->random()->id,
-                'reporter_id' => $users->random()->id,
-            ],
-            [
-                'title' => 'API Rate Limiting Issue',
-                'description' => 'API is returning 429 errors too frequently. Rate limiting needs to be adjusted.',
-                'status' => 'In Progress',
-                'priority' => 'Medium',
-                'assignee_id' => $users->random()->id,
-                'reporter_id' => $users->random()->id,
-            ],
-            [
-                'title' => 'Dashboard Performance Slow',
-                'description' => 'Admin dashboard is loading very slowly. Page load time is over 10 seconds.',
-                'status' => 'Resolved',
-                'priority' => 'High',
-                'assignee_id' => $users->random()->id,
-                'reporter_id' => $users->random()->id,
-            ],
-        ];
+        // Map enum values
+        $categories = array_map(fn($val) => $val->value, TicketCategoryEnum::cases());
+        $classifications = array_map(fn($val) => $val->value, TicketClassificationEnum::cases());
+        $serviceTypes = array_map(fn($val) => $val->value, TicketServiceTypeEnum::cases());
+        $severities = array_map(fn($val) => $val->value, TicketSeverityEnum::cases());
 
-        foreach ($ticketData as $ticket) {
-            Tickets::create($ticket);
-        }
+        $ticketData = collect(range(1, 20))->map(function () use ($users, $categories, $classifications, $serviceTypes, $severities) {
+            $reporter = $users->random();
+            $assignee = $users->random();
+
+            // Random status
+            $statusOptions = array_map(fn($val) => $val->value, TicketStatusEnum::cases());
+            $status = $statusOptions[array_rand($statusOptions)];
+
+            $dateReported = Carbon::now()->subDays(rand(1, 10));
+            $dateClosed = in_array($status, ['Resolved', 'CLOSED']) ? $dateReported->copy()->addHours(rand(1, 72)) : null;
+
+            return [
+                'title' => fake()->sentence(rand(3, 6)),
+                'description' => fake()->paragraph(),
+                'status' => $status,
+                'image' => null,
+                'assignee_id' => $assignee->id,
+                'reporter_id' => $reporter->id,
+                'reporter_email' => $reporter->email,
+                'assignee_email' => $assignee->email,
+                'category' => $categories[array_rand($categories)],
+                'classification' => $classifications[array_rand($classifications)],
+                'service_type' => $serviceTypes[array_rand($serviceTypes)],
+                'date_reported' => $dateReported,
+                'date_closed' => $dateClosed,
+                'severity' => $severities[array_rand($severities)],
+                'reporter_department' => $reporter->department,
+                'resolution' => in_array($status, ['CLOSED']) ? 'Issue resolved successfully.' : null,
+                'assignee_team' => $assignee->team,
+                'performance' => 'Good',
+                'sla' => rand(1, 5),
+                'tat' => rand(1, 5),
+                'total_tat' => rand(1, 10),
+                'image' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        })->toArray();
+
+        Tickets::insert($ticketData);
     }
 }

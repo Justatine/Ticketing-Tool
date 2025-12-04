@@ -13,16 +13,20 @@ const selectUser = (id) => {
         assignee_id: id
     })
 }
+
 </script>
 
 <template>
   <div class="bg-white border border-gray-200 dark:bg-slate-800 rounded-xl shadow-sm p-4 flex flex-col gap-2 hover:shadow-md transition duration-200">
 
     <div class="flex justify-between items-start">
-      <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-        # {{ ticket.id }}
-      </h3>
-      <TicketBadge :status="ticket.severity" type="severity" />
+        <div class="flex justify-start gap-3">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                # {{ ticket.id }} -
+            <TicketBadge :status="ticket.status" type="status" />
+            </h3>
+        </div>
+        <TicketBadge :status="ticket.severity" type="severity" class="mt-1" />
     </div>
 
     <p class="text-sm text-gray-600 dark:text-gray-400">
@@ -49,7 +53,7 @@ const selectUser = (id) => {
         :status="ticket.status"
         :dateClosed="ticket.date_closed"
       />
-      <span>{{ new Date(ticket.created_at).toLocaleDateString() }}</span>
+      <span>{{ new Date(ticket.date_reported).toLocaleDateString() }}</span>
     </div>
 
     <div class="flex justify-between pt-2">
