@@ -2,6 +2,8 @@
 
 namespace App\Policies;
 
+use App\Enums\RoleEnum;
+use App\Enums\TicketStatusEnum;
 use App\Models\Tickets;
 use App\Models\User;
 use Illuminate\Auth\Access\Response;
@@ -22,7 +24,7 @@ class TicketsPolicy
     public function view(User $user, Tickets $ticket): bool
     {
         // admin access
-        if ($user->role === 'Admin') {
+        if ($user->role === RoleEnum::SA) {
             return true;
         }
 
@@ -52,18 +54,18 @@ class TicketsPolicy
      */
     public function update(User $user, Tickets $ticket): bool
     {
-        if ($ticket->status === "Closed") {
+        if ($ticket->status === TicketStatusEnum::CLOSED->value) {
             return false;
         }
 
-        if ($user->role === "Admin") {
+        if ($user->role === RoleEnum::SA) {
             return true;
         }
 
         // created the ticket
-        if ($ticket->reporter_id === $user->id) {
-            return true;
-        }
+        // if ($ticket->reporter_id === $user->id) {
+        //     return true;
+        // }
 
         // assigned to resolve it
         if ($ticket->assignee_id === $user->id) {

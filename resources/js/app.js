@@ -5,6 +5,7 @@ import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
+import VueApexCharts from 'vue3-apexcharts';
 
 // for toast listeners
 import { router } from '@inertiajs/vue3';
@@ -26,7 +27,8 @@ createInertiaApp({
         //     .mount(el);
         const app = createApp({ render: () => h(App, props) })
             .use(plugin)
-            .use(ZiggyVue);
+            .use(ZiggyVue)
+            .use(VueApexCharts);
 
         // Set up toast listeners after app is created
         const { success, error, warning, info } = useToast();

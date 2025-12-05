@@ -5,8 +5,11 @@ import DatatableFilterModal from './DatatableFilterModal.vue';
 
 const props = defineProps({
   modelValue: String,
-  filters: { type: Object, default: () => ({}) }
+  filters: { type: Object, default: () => ({}) },
+  user_details: { type: Object, default: () => ({}) }
 });
+
+// console.log('dt search: '+JSON.stringify(props.user_details.regions))
 
 const emit = defineEmits(['update:modelValue', 'update:filters']);
 const search = ref(props.modelValue || '');
@@ -47,6 +50,7 @@ function handleConfirm(filters) {
       :show="showModal"
       @close="closeModal"
       @confirm="handleConfirm"
+      :user_details="props.user_details"
     />
 
     <!-- Search + Filter -->
@@ -55,7 +59,7 @@ function handleConfirm(filters) {
         type="text"
         v-model="search"
         placeholder="Search..."
-        class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring focus:ring-blue-400"
+        class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring focus:ring-red"
       />
 
       <PrimaryButton @click="openFilterModal">

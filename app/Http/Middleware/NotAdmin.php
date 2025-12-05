@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Enums\RoleEnum;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +16,7 @@ class NotAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user()->role === "Admin") {
+        if ($request->user()->role === RoleEnum::SA) {
             return redirect()->route('dashboard');
         }
         return $next($request);

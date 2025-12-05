@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\Tickets;
 use App\Policies\TicketsPolicy;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 
@@ -23,6 +24,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
+
+        // Gate::define('view-reports', fn ($user) => $user->is_admin);
     }
 
     protected $policies = [

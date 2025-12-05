@@ -2,8 +2,10 @@
 
 namespace App\Services;
 
+use App\Enums\RoleEnum;
 use App\Enums\TicketCategoryEnum;
 use App\Enums\TicketClassificationEnum;
+use App\Enums\TicketPerformanceEnum;
 use App\Enums\TicketServiceTypeEnum;
 use App\Enums\TicketSeverityEnum;
 use App\Enums\TicketStatusEnum;
@@ -30,6 +32,7 @@ class TicketService
         $data['sla'] = 0.80;
         $data['tat'] = 0.00;
         $data['total_tat'] = 0.00;
+        $data['resolution'] = null;
 
         return Tickets::create($data);
     }
@@ -42,7 +45,7 @@ class TicketService
         $data['assignee_email'] = User::find($data['assignee_id'])?->email;
         $data['assignee_team'] = User::find($data['assignee_id'])?->team;
 
-        if (isset($data['status']) && $data['status'] === 'CLOSED') {
+        if (isset($data['status']) && $data['status'] === TicketStatusEnum::CLOSED->value) {
             $data['date_closed'] = Carbon::now();
 
             $dateReported = Carbon::parse($ticket->date_reported);
@@ -56,8 +59,10 @@ class TicketService
             $targetHours = 4;
             if ($tatHours <= $targetHours) {
                 $data['sla'] = 1.00;
+                $data['performance'] = TicketPerformanceEnum::PASS->value;
             } else {
                 $data['sla'] = 0.00;
+                $data['performance'] = TicketPerformanceEnum::FAIL->value;
             }
 
             // Calculate SLA as percentage of target
@@ -76,14 +81,55 @@ class TicketService
     }
 
     /**
+     * Get all user form options for dropdowns.
+     */
+    public function getTicketCardData(): array
+    {
+        $user_id = Auth::id();
+
+        return [
+            'total_open_new' => Tickets::whereIn('status', [TicketStatusEnum::NEW->value, TicketStatusEnum::OPEN->value])->where('assignee_id',$user_id)->count(),
+            'total_inprog' => Tickets::where('status', TicketStatusEnum::INPROG->value)->where('assignee_id',$user_id)->count(),
+            'total_closed' => Tickets::where('status', TicketStatusEnum::CLOSED->value)->where('assignee_id',$user_id)->count(),
+            // 'total_unresolved' => Tickets::where('status', '!=', TicketStatusEnum::CLOSED)
+            //     ->whereNull('date_closed')
+            //     ->where('assignee_id',$user_id)
+            //     ->count(),
+            'total_pending' => Tickets::where('status', TicketStatusEnum::PENDING->value)->where('assignee_id',$user_id)->count(),
+            'total_failed_unresolved' => Tickets::whereNotNull('date_closed')
+                ->whereRaw('date_closed > DATE_ADD(date_reported, INTERVAL 3 HOUR)')
+                ->where('assignee_id',$user_id)
+                ->count(),
+            'total_voided' => Tickets::where('status', TicketStatusEnum::VOID->value)->where('assignee_id',$user_id)->count(),
+        ];
+    }
+
+    /**
      * Get all assignees for dropdown.
      */
     public function getTickets(): array
     {
+        $user_id = Auth::id();
+
         return Tickets::with(['assignee', 'reporter'])
+            ->where(function($query) use ($user_id) {
+                $query->where('assignee_id', $user_id);
+                    // ->orWhere('reporter_id', $user_id);
+            })
+            ->orderByRaw("
+                CASE WHEN status != ? THEN 0 ELSE 1 END
+            ", [TicketStatusEnum::CLOSED->value])
+            ->orderByRaw("
+                FIELD(severity, ?, ?, ?, ?)
+            ", [
+                TicketSeverityEnum::CRITICAL->value,
+                TicketSeverityEnum::HIGH->value,
+                TicketSeverityEnum::NORMAL->value,
+                TicketSeverityEnum::LOW->value
+            ])
             ->filter(request(['search', 'assignee_id']))
             ->latest()
-            ->paginate(5)
+            ->paginate(6)
             ->withQueryString()
             ->toArray();
     }
@@ -95,7 +141,7 @@ class TicketService
     {
         $userID = Auth::id();
 
-        return User::where('role', '<>','Admin')
+        return User::where('role', '<>', RoleEnum::SA->value)
             ->where('id','<>',$userID)
             ->select('id','name')
             ->orderBy('name')

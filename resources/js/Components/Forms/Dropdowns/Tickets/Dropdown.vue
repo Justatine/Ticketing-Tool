@@ -26,6 +26,10 @@ const props = defineProps({
   placeholder: {
     type: String,
     default: 'Select item'
+  },
+  zIndex: {
+    type: Number,
+    default: 10
   }
 });
 
@@ -38,7 +42,7 @@ const selectedLabel = computed(() => {
 </script>
 
 <template>
-  <div class="space-y-4">
+  <div class="space-y-4 relative z-{{ zIndex }}">
     <InputLabel :value="label" />
     <Dropdown align="right" width="48">
       <template #trigger>

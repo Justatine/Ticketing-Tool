@@ -2,16 +2,20 @@
 
 namespace App\Models;
 
+use App\Enums\RoleEnum;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Tickets;
+use App\Traits\HasUserPermissions;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasRoles, HasUserPermissions;
 
     /**
      * The attributes that are mass assignable.
@@ -27,6 +31,22 @@ class User extends Authenticatable implements MustVerifyEmail
         'team',
         'region',
     ];
+
+    protected $appends = [
+        'role_label'
+    ];
+
+    protected function roleLabel(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->role ? RoleEnum::from($this->role)->label() : null,
+        );
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === RoleEnum::SA->value;
+    }
 
     /**
      * The attributes that should be hidden for serialization.

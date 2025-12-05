@@ -9,22 +9,48 @@ import { Link } from '@inertiajs/vue3';
 import { useToast } from '@/Composables/Toast';
 import ToastContainer from '@/Components/Containers/ToastContainer.vue';
 const { toast, removeToast } = useToast
+import Sidebar from '@/Components/UI/Sidebar.vue';
+import Topbar from '@/Components/UI/Topbar.vue';
 
-const showingNavigationDropdown = ref(false);
+const sidebarOpen = ref(false);
+
+const toggleSidebar = () => {
+  sidebarOpen.value = !sidebarOpen.value;
+};
+
+const closeSidebar = () => {
+  sidebarOpen.value = false;
+};
+
 </script>
 
 <template>
     <div>
+        <div class="flex h-screen bg-gray-50 dark:bg-gray-950">
+            <Sidebar :open="sidebarOpen" @close="closeSidebar" />
+
+            <div class="flex-1 flex flex-col overflow-hidden">
+            <Topbar @toggle-sidebar="toggleSidebar" />
+
+            <div class="flex-1 overflow-auto">
+                <div class="p-6">
+                    <main>
+                        <slot/>
+                    </main>
+                </div>
+            </div>
+            </div>
+        </div>
+
+<!--
         <div class="min-h-screen bg-gray-100">
-            <ToastContainer/>
+
             <nav
                 class="border-b border-gray-100 bg-white"
             >
-                <!-- Primary Navigation Menu -->
                 <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div class="flex h-16 justify-between">
                         <div class="flex">
-                            <!-- Logo -->
                             <div class="flex shrink-0 items-center">
                                 <Link :href="route('dashboard')">
                                     <ApplicationLogo
@@ -33,10 +59,7 @@ const showingNavigationDropdown = ref(false);
                                 </Link>
                             </div>
 
-                            <!-- Navigation Links -->
-                            <div
-                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex"
-                            >
+                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink
                                     :href="route('dashboard')"
                                     :active="route().current('dashboard')"
@@ -62,7 +85,6 @@ const showingNavigationDropdown = ref(false);
                         </div>
 
                         <div class="hidden sm:ms-6 sm:flex sm:items-center">
-                            <!-- Settings Dropdown -->
                             <div class="relative ms-3">
                                 <Dropdown align="right" width="48">
                                     <template #trigger>
@@ -107,7 +129,6 @@ const showingNavigationDropdown = ref(false);
                             </div>
                         </div>
 
-                        <!-- Hamburger -->
                         <div class="-me-2 flex items-center sm:hidden">
                             <button
                                 @click="
@@ -150,7 +171,6 @@ const showingNavigationDropdown = ref(false);
                     </div>
                 </div>
 
-                <!-- Responsive Navigation Menu -->
                 <div
                     :class="{
                         block: showingNavigationDropdown,
@@ -167,7 +187,6 @@ const showingNavigationDropdown = ref(false);
                         </ResponsiveNavLink>
                     </div>
 
-                    <!-- Responsive Settings Options -->
                     <div
                         class="border-t border-gray-200 pb-1 pt-4"
                     >
@@ -198,7 +217,6 @@ const showingNavigationDropdown = ref(false);
                 </div>
             </nav>
 
-            <!-- Page Heading -->
             <header
                 class="bg-white shadow"
                 v-if="$slots.header"
@@ -208,10 +226,10 @@ const showingNavigationDropdown = ref(false);
                 </div>
             </header>
 
-            <!-- Page Content -->
             <main>
                 <slot />
             </main>
-        </div>
+        </div> -->
+
     </div>
 </template>

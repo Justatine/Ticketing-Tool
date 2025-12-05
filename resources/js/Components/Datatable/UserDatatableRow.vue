@@ -79,7 +79,7 @@ const handleConfirm = async () => {
                 : 'bg-green-100 text-green-700'
             ]"
         >
-            {{ row.role }}
+            {{ row.role_label }}
         </span>
         </td>
 
