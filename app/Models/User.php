@@ -40,6 +40,12 @@ class User extends Authenticatable implements MustVerifyEmail
             get: fn () => $this->role ? RoleEnum::from($this->role)->label() : null,
         );
     }
+
+    public function isAdmin()
+    {
+        return $this->role === RoleEnum::SA->value;
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

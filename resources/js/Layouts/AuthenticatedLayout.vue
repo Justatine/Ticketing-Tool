@@ -7,19 +7,40 @@ import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
 import { useToast } from '@/Composables/Toast';
-import AdminLayout from './AdminLayout.vue';
 import ToastContainer from '@/Components/Containers/ToastContainer.vue';
 const { toast, removeToast } = useToast
+import Sidebar from '@/Components/UI/Sidebar.vue';
+import Topbar from '@/Components/UI/Topbar.vue';
+
+const sidebarOpen = ref(false);
+
+const toggleSidebar = () => {
+  sidebarOpen.value = !sidebarOpen.value;
+};
+
+const closeSidebar = () => {
+  sidebarOpen.value = false;
+};
 
 </script>
 
 <template>
     <div>
-        <AdminLayout>
-            <main>
-                <slot/>
-            </main>
-        </AdminLayout>
+        <div class="flex h-screen bg-gray-50 dark:bg-gray-950">
+            <Sidebar :open="sidebarOpen" @close="closeSidebar" />
+
+            <div class="flex-1 flex flex-col overflow-hidden">
+            <Topbar @toggle-sidebar="toggleSidebar" />
+
+            <div class="flex-1 overflow-auto">
+                <div class="p-6">
+                    <main>
+                        <slot/>
+                    </main>
+                </div>
+            </div>
+            </div>
+        </div>
 
 <!--
         <div class="min-h-screen bg-gray-100">

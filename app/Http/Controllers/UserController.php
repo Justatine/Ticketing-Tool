@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
 use App\Services\UserService;
+use Illuminate\Support\Facades\Gate;
 
 class UserController extends Controller
 {
@@ -23,6 +24,8 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+        Gate::authorize('view');
+
         return Inertia::render('Users/Index',[
             'users' => $this->userService->getPaginatedUsers(10),
             'user_details' => $this->userService->getUserFormOptions(),
@@ -35,6 +38,8 @@ class UserController extends Controller
      */
     public function create()
     {
+        Gate::authorize('view');
+
         // return Inertia::render('Users/Create');
         return Inertia::render('Users/Create', [
             'departments' => $this->userService->getDepartments(),
@@ -49,6 +54,8 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
+        Gate::authorize('view');
+
         $this->userService->store($request->validated());
 
         return redirect()->route('users.index')
@@ -61,6 +68,7 @@ class UserController extends Controller
     public function show(User $user)
     {
         //
+        Gate::authorize('view');
     }
 
     /**
@@ -68,6 +76,8 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
+        Gate::authorize('view');
+
         return Inertia::render('Users/Edit',[
             'user' => $user,
             'departments' => $this->userService->getDepartments(),
@@ -82,6 +92,8 @@ class UserController extends Controller
      */
     public function update(UpdateUserRequest $request, User $user)
     {
+        Gate::authorize('view');
+
         $this->userService->update($user, $request->validated());
 
         return redirect()->route('users.index')
@@ -93,6 +105,8 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
+        Gate::authorize('view');
+
         $this->userService->destroy($user);
 
         return redirect()->route('users.index')->with('flash', [
