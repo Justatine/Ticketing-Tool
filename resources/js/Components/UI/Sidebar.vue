@@ -9,23 +9,35 @@ import {
 } from 'lucide-vue-next';
 
 const props = defineProps({
-  open: {
-    type: Boolean,
-    default: false
-  }
+    auth: Object,
+    open: {
+        type: Boolean,
+        default: false
+    }
 });
 
 const emit = defineEmits(['close']);
 
 const sidebarItems = [
   { id: 'dashboard', label: 'Dashboard', icon: Home, href: '/dashboard' },
-  { id: 'users', label: 'Users', icon: Users, href: '/users' },
-  { id: 'tickets', label: 'Tickets', icon: Ticket, href: '/tickets' },
+  { id: 'users', label: 'Users', icon: Users, href: '/users', permissions:['read-users', 'update-users'] },
+  { id: 'tickets', label: 'Tickets', icon: Ticket, href: '/tickets', permissions:['read-tickets', 'update-tickets'] },
 ];
 
 const page = usePage();
+const userPermissions = computed(() => page.props.auth.permissions);
+console.log('user permissions: '+userPermissions.value)
 
-// Get current route to determine active menu
+const navigation = computed(() => {
+    return sidebarItems.filter((item) => {
+        // Check permissions for other items
+        if (!item.permissions) return true; // No permissions required
+        return !item.permissions.every((permission) => !userPermissions.value.includes(permission));
+    });
+});
+
+// console.log(`navigation: ${JSON.stringify(navigation.value, null, 2)}`)
+
 const currentRoute = computed(() => page.url);
 
 const isActive = (href) => {
@@ -73,7 +85,7 @@ const closeSidebar = () => {
       <!-- Menu Items -->
       <nav class="px-3 py-6 space-y-2 overflow-y-auto">
         <Link
-          v-for="item in sidebarItems"
+          v-for="item in navigation"
           :key="item.id"
           :href="item.href"
           :class="[
